@@ -170,6 +170,7 @@ class AbstractModelParser:
                 inbound = [self._layer_list[-1]['name']]
                 inserted_flatten = False
             else:
+                # print('name map', name_map)
                 inbound = self.get_inbound_names(layer, name_map)
 
             attributes = self.initialize_attributes(layer)
@@ -214,6 +215,8 @@ class AbstractModelParser:
                 self.parse_pooling(layer, attributes)
 
             if layer_type == 'Concatenate':
+                # print('parsing concatenate')
+                # print(inbound)
                 self.parse_concatenate(layer, attributes)
 
             self._layer_list.append(attributes)
@@ -314,18 +317,24 @@ class AbstractModelParser:
         """
 
         inbound = self.get_inbound_layers(layer)
+        print(layer, inbound)
         for ib in range(len(inbound)):
             for _ in range(len(self.layers_to_skip)):
                 if self.get_type(inbound[ib]) in self.layers_to_skip:
                     inbound[ib] = self.get_inbound_layers(inbound[ib])[0]
                 else:
                     break
-        if len(self._layer_list) == 0 or \
-                any([self.get_type(inb) == 'InputLayer' for inb in inbound]):
+        if len(self._layer_list) == 0:
             return ['input']
         else:
-            inb_idxs = [name_map[str(id(inb))] for inb in inbound]
-            return [self._layer_list[i]['name'] for i in inb_idxs]
+            inb_idxs = []
+            for inb in inbound:
+                if self.get_type(inb) != 'InputLayer':
+                    inb_idxs.append(name_map[str(id(inb))])
+            inbnames = [self._layer_list[i]['name'] for i in inb_idxs]
+            if any([self.get_type(inb) == 'InputLayer' for inb in inbound]):
+                inbnames.append('input')
+            return inbnames
 
     @abstractmethod
     def get_inbound_layers(self, layer):
@@ -633,25 +642,35 @@ class AbstractModelParser:
             A Keras model, functionally equivalent to `input_model`.
         """
 
-        img_input = keras.layers.Input(batch_shape=self.get_batch_input_shape(),
+        model_input = keras.layers.Input(batch_shape=self.get_batch_input_shape(),
                                        name='input')
-        parsed_layers = {'input': img_input}
+        parsed_layers = {'input': model_input}
         print("Building parsed model...\n")
+        # print(self._layer_list)
         for layer in self._layer_list:
             # Replace 'parameters' key with Keras key 'weights'
             if 'parameters' in layer:
                 layer['weights'] = layer.pop('parameters')
 
+            if layer['layer_type'] == 'Concatenate':
+                layer['layer_type'] = 'concatenate'
+                print(layer)
             # Add layer
             parsed_layer = getattr(keras.layers, layer.pop('layer_type'))
-
+            # print(parsed_layer)
             inbound = [parsed_layers[inb] for inb in layer.pop('inbound')]
+            # print(inbound)
+
             if len(inbound) == 1:
                 inbound = inbound[0]
-            parsed_layers[layer['name']] = parsed_layer(**layer)(inbound)
+
+            if parsed_layer == keras.layers.concatenate:
+                parsed_layers[layer['name']] = parsed_layer(inbound)
+            else:
+                parsed_layers[layer['name']] = parsed_layer(**layer)(inbound)
 
         print("Compiling parsed model...\n")
-        self.parsed_model = keras.models.Model(img_input, parsed_layers[
+        self.parsed_model = keras.models.Model(model_input, parsed_layers[
             self._layer_list[-1]['name']])
         # Optimizer and loss do not matter because we only do inference.
         self.parsed_model.compile(
