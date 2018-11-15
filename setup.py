@@ -38,7 +38,7 @@ class Tox(TestCommand):
         sys.exit(errno)
 
 setup(
-    name='snntoolbox (MOD)',
+    name='snntoolbox-mod',
     version='0.2.dev1',  # see https://www.python.org/dev/peps/pep-0440/
     description='Spiking neural network conversion toolbox (MOD)',
     long_description=long_description,
