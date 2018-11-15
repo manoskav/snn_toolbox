@@ -38,14 +38,14 @@ class Tox(TestCommand):
         sys.exit(errno)
 
 setup(
-    name='snntoolbox',
-    version='0.2.1',  # see https://www.python.org/dev/peps/pep-0440/
-    description='Spiking neural network conversion toolbox',
+    name='snntoolbox (MOD)',
+    version='0.2.1-custom-test',  # see https://www.python.org/dev/peps/pep-0440/
+    description='Spiking neural network conversion toolbox (MOD)',
     long_description=long_description,
-    author='Bodo Rueckauer',
-    author_email='bodo.rueckauer@gmail.com',
-    url='https://github.com/NeuromorphicProcessorProject/snn_toolbox',
-    download_url='https://github.com/NeuromorphicProcessorProject/snn_toolbox.git',
+    author='Bodo Rueckauer, Manos Kav',
+    author_email='bodo.rueckauer@gmail.com, kavvousanos.em@gmail.com',
+    url='https://github.com/manoskav/snn_toolbox',
+    download_url='https://github.com/manoskav/snn_toolbox.git',
     license='MIT',
 
     classifiers=[
