@@ -126,8 +126,12 @@ def load(path, filename):
                       ['accuracy', metrics.top_k_categorical_accuracy])
     else:
         from snntoolbox.parsing.utils import get_custom_activations_dict
+        from snntoolbox.parsing.model_libs.my_custom_functions import myce, myaccuracy
+        custom_dict = get_custom_activations_dict()
+        custom_dict['myce']=myce
+        custom_dict['myaccuracy']=myaccuracy
         model = models.load_model(filepath + '.h5',
-                                  get_custom_activations_dict())
+                                  custom_dict)
         model.compile(model.optimizer, model.loss,
                       ['accuracy', metrics.top_k_categorical_accuracy])
 
