@@ -354,7 +354,11 @@ def update_setup(config_filepath):
                 if 'optimizer_weights' in f.keys():
                     del f['optimizer_weights']
             # Try loading the model.
-            keras.models.load_model(h5_filepath, get_custom_activations_dict())
+            from snntoolbox.parsing.model_libs.my_custom_functions import myce, myaccuracy
+            custom_dict = get_custom_activations_dict()
+            custom_dict['myce']=myce
+            custom_dict['myaccuracy']=myaccuracy
+            keras.models.load_model(h5_filepath, custom_dict)
     elif model_lib == 'lasagne':
         h5_filepath = os.path.join(path_wd, filename_ann + '.h5')
         pkl_filepath = os.path.join(path_wd, filename_ann + '.pkl')
