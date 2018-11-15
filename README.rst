@@ -1,5 +1,6 @@
-Spiking neural network conversion toolbox
-=========================================
+Spiking neural network conversion toolbox (MOD)
+===================================================
+This fork is used to support custom ANNs and may be incompatible with ANNs supported by the original toolbox.
 
 The SNN conversion toolbox contains functions to transform rate-based artificial
 neural networks into spiking neural networks, and to simulate them. Please
