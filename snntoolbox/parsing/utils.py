@@ -317,7 +317,8 @@ class AbstractModelParser:
         """
 
         inbound = self.get_inbound_layers(layer)
-        print(layer, inbound)
+        # print(layer, inbound)
+
         for ib in range(len(inbound)):
             for _ in range(len(self.layers_to_skip)):
                 if self.get_type(inbound[ib]) in self.layers_to_skip:
@@ -654,7 +655,7 @@ class AbstractModelParser:
 
             if layer['layer_type'] == 'Concatenate':
                 layer['layer_type'] = 'concatenate'
-                print(layer)
+                # print(layer)
             # Add layer
             parsed_layer = getattr(keras.layers, layer.pop('layer_type'))
             # print(parsed_layer)
